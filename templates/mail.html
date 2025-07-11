@@ -1,0 +1,105 @@
+{% extends "layout.html" %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+<style>
+  .form-label {
+    font-weight: 600;
+  }
+
+  input[type="email"],
+  input[type="text"],
+  textarea {
+    transition: all 0.3s ease-in-out;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+
+  input:focus,
+  textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0,123,255,0.5);
+    outline: none;
+  }
+
+  .btn-primary {
+    background-color: #007bff;
+    border: none;
+    padding: 10px 20px;
+    font-weight: bold;
+    border-radius: 6px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+
+  .btn-primary:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+  }
+
+  .alert {
+    animation: fadeIn 0.6s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {opacity: 0; transform: translateY(-10px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
+
+  .form-group-valid::after {
+    content: "✔";
+    color: green;
+    margin-left: 8px;
+  }
+
+  .form-group-invalid::after {
+    content: "✖";
+    color: red;
+    margin-left: 8px;
+  }
+</style>
+
+<div class="container mt-4">
+  <h2><i class="fas fa-envelope"></i> Envoi d’e-mail</h2>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <form method="POST" id="emailForm">
+    <div class="mb-3">
+      <label for="email" class="form-label">Adresse du destinataire :</label>
+      <input type="email" class="form-control" name="email" id="email" required>
+    </div>
+    <div class="mb-3">
+      <label for="objet" class="form-label">Objet :</label>
+      <input type="text" class="form-control" name="objet" id="objet" required>
+    </div>
+    <div class="mb-3">
+      <label for="message" class="form-label">Contenu :</label>
+      <textarea class="form-control" name="message" id="message" rows="5" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Envoyer</button>
+  </form>
+</div>
+
+<script>
+  // Validation visuelle des champs (ajout dynamique des classes valid/invalid)
+  const form = document.getElementById("emailForm");
+  const fields = ['email', 'objet', 'message'];
+
+  fields.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    field.addEventListener("blur", () => {
+      if (field.value.trim().length > 0) {
+        field.classList.remove("is-invalid");
+        field.classList.add("is-valid");
+      } else {
+        field.classList.remove("is-valid");
+        field.classList.add("is-invalid");
+      }
+    });
+  });
+</script>
+{% endblock %}

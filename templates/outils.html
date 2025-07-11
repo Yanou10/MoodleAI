@@ -1,0 +1,195 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1 class="mb-5 text-center fw-bold" style="color:#6c5ce7;"> Outils d'apprentissage 🧰</h1>
+
+<div class="row g-4">
+  <!-- TODO LIST -->
+  <div class="col-md-4">
+    <div class="card shadow-sm rounded-4 border-0">
+      <div class="card-header" style="background-color:#a29bfe; color:white; font-size: 1.25rem;">
+        📝 To-Do List
+      </div>
+      <div class="card-body">
+        <input type="text" id="todo-input" class="form-control mb-3 rounded-pill" placeholder="Nouvelle tâche">
+        <button class="btn" style="background-color:#74b9ff; color:white;" onclick="addTodo()">Ajouter</button>
+        <ul id="todo-list" class="list-group list-group-flush"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- POMODORO TIMER -->
+  <div class="col-md-4">
+    <div class="card shadow-sm rounded-4 border-0">
+      <div class="card-header" style="background-color:#ffeaa7; color:#2d3436; font-size: 1.25rem;">
+        ⏱️ Minuteur Pomodoro
+      </div>
+      <div class="card-body text-center">
+        <h2 id="pomodoro-timer" style="font-size: 3rem; font-family: monospace; color:#2d3436;">25:00</h2>
+        <button class="btn" style="background-color:#fab1a0; color:white;" onclick="startPomodoro()">Démarrer</button>
+        <button class="btn btn-outline-secondary" onclick="resetPomodoro()">Réinitialiser</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALCULATE J+N DATES -->
+  <div class="col-md-4">
+    <div class="card shadow-sm rounded-4 border-0">
+      <div class="card-header" style="background-color:#55efc4; color:#2d3436; font-size: 1.25rem;">
+        📅 Calcul J + N
+      </div>
+      <div class="card-body">
+        <label for="start-date" class="form-label">Date de départ :</label>
+        <input type="date" id="start-date" class="form-control mb-3 rounded-pill">
+        <button class="btn" style="background-color:#00cec9; color:white;" onclick="calculateJ()">Calculer les dates</button>
+        <ul id="j-list" class="list-group list-group-flush"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Mood Check Dynamic -->
+<div class="card shadow-sm rounded-4 border-0 mt-5">
+  <div class="card-header" style="background-color:#fdcb6e; font-size: 1.25rem;">
+    🧠 Comment te sens-tu aujourd’hui ?
+  </div>
+  <div class="card-body text-center">
+    <div class="d-flex justify-content-around mb-3">
+      <button class="emoji-btn" onclick="showMood(5)">😄</button>
+      <button class="emoji-btn" onclick="showMood(4)">🙂</button>
+      <button class="emoji-btn" onclick="showMood(3)">😐</button>
+      <button class="emoji-btn" onclick="showMood(2)">🙁</button>
+      <button class="emoji-btn" onclick="showMood(1)">😢</button>
+    </div>
+    <div id="mood-response" class="mt-3 fw-semibold"></div>
+  </div>
+</div>
+
+<style>
+  .emoji-btn {
+    font-size: 2rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .emoji-btn:hover {
+    transform: scale(1.3);
+  }
+</style>
+
+<script>
+// TO-DO LIST
+function saveTodos() {
+  const tasks = Array.from(document.querySelectorAll('#todo-list li')).map(li => li.firstChild.textContent.trim());
+  localStorage.setItem('todos', JSON.stringify(tasks));
+}
+
+function loadTodos() {
+  const saved = localStorage.getItem('todos');
+  if (saved) {
+    JSON.parse(saved).forEach(task => {
+      const li = document.createElement('li');
+      li.className = 'list-group-item d-flex justify-content-between align-items-center';
+      li.innerHTML = `${task} <button class="btn btn-sm btn-outline-danger rounded-circle" onclick="this.parentElement.remove(); saveTodos()">&times;</button>`;
+      document.getElementById('todo-list').appendChild(li);
+    });
+  }
+}
+
+function addTodo() {
+  const input = document.getElementById('todo-input');
+  const task = input.value.trim();
+  if (task) {
+    const li = document.createElement('li');
+    li.className = 'list-group-item d-flex justify-content-between align-items-center';
+    li.innerHTML = `${task} <button class="btn btn-sm btn-outline-danger rounded-circle" onclick="this.parentElement.remove(); saveTodos()">&times;</button>`;
+    document.getElementById('todo-list').appendChild(li);
+    input.value = '';
+    saveTodos();
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  loadTodos();
+
+  const storedMood = localStorage.getItem('dailyMood');
+  const today = new Date().toLocaleDateString('fr-FR');
+  if (storedMood) {
+    const mood = JSON.parse(storedMood);
+    if (mood.date === today) {
+      showMood(mood.level);
+    }
+  }
+});
+
+// POMODORO TIMER
+let pomodoroTime = 1500;
+let pomodoroInterval;
+function startPomodoro() {
+  clearInterval(pomodoroInterval);
+  pomodoroInterval = setInterval(() => {
+    if (pomodoroTime > 0) {
+      pomodoroTime--;
+      const minutes = String(Math.floor(pomodoroTime / 60)).padStart(2, '0');
+      const seconds = String(pomodoroTime % 60).padStart(2, '0');
+      document.getElementById('pomodoro-timer').textContent = `${minutes}:${seconds}`;
+    } else {
+      clearInterval(pomodoroInterval);
+      alert("Temps écoulé ! Prends une pause.");
+    }
+  }, 1000);
+}
+function resetPomodoro() {
+  clearInterval(pomodoroInterval);
+  pomodoroTime = 1500;
+  document.getElementById('pomodoro-timer').textContent = '25:00';
+}
+
+// CALCULATE J+N DATES
+function calculateJ() {
+  const dateStr = document.getElementById('start-date').value;
+  if (!dateStr) return;
+  const startDate = new Date(dateStr);
+  const list = document.getElementById('j-list');
+  list.innerHTML = '';
+  [1, 2, 3, 7, 14].forEach(n => {
+    const d = new Date(startDate);
+    d.setDate(d.getDate() + n);
+    const li = document.createElement('li');
+    li.className = 'list-group-item';
+    li.textContent = `J+${n} : ${d.toLocaleDateString('fr-FR')}`;
+    list.appendChild(li);
+  });
+}
+
+// MOOD FEEDBACK
+function showMood(level) {
+  const response = document.getElementById("mood-response");
+  let message = "";
+  const today = new Date().toLocaleDateString('fr-FR');
+  localStorage.setItem('dailyMood', JSON.stringify({ date: today, level: level }));
+
+  switch(level) {
+    case 5:
+      message = "Super ! Continue comme ça 🌟";
+      break;
+    case 4:
+      message = "Bonne énergie 💪 Profite de ta journée !";
+      break;
+    case 3:
+      message = "Prends une pause et respire profondément. 🌿";
+      break;
+    case 2:
+      message = "Courage 🙏 Essaie de te reposer, ou parle à un proche.";
+      break;
+    case 1:
+      message = "Tu n’es pas seul(e). Parle à quelqu’un 💬. Tu peux contacter le <a href='https://www.univ-reunion.fr/vie-etudiante/sante-et-medecine-preventive/medecine-preventive/' target='_blank'>SUMPPS</a> ou consulter un professionnel.";
+      break;
+  }
+
+  response.innerHTML = message;
+}
+</script>
+{% endblock %}

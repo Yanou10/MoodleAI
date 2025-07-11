@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h1>Ajouter un fichier de cours ou devoir</h1>
+
+<form method="post" enctype="multipart/form-data">
+  <label>Matière :
+    <select name="matiere" required>
+      <option value="Maths">Maths</option>
+      <option value="SV">Sciences de la Vie</option>
+    </select>
+  </label><br>
+
+  <label>Titre du fichier :
+    <input type="text" name="titre" required>
+  </label><br>
+
+  <label>Type :
+    <select name="type" required>
+      <option value="cours">Cours</option>
+      <option value="devoir">Devoir à rendre</option>
+    </select>
+  </label><br>
+
+  <label>Jour de la semaine (si devoir) :
+    <select name="jour">
+      <option value="">—</option>
+      <option>Lundi</option>
+      <option>Mardi</option>
+      <option>Mercredi</option>
+      <option>Jeudi</option>
+      <option>Vendredi</option>
+      <option>Samedi</option>
+      <option>Dimanche</option>
+    </select>
+  </label><br>
+
+  <label>Fichier PDF :
+    <input type="file" name="fichier" accept="application/pdf" required>
+  </label><br>
+
+  <button type="submit">Envoyer</button>
+</form>
+
+{% endblock %}

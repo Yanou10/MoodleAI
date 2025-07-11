@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Assistant</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 10px;
+      background: #f0f4f8;
+    }
+    #output {
+      height: 400px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 10px;
+      background: #fff;
+      border-radius: 6px;
+    }
+    #input {
+      width: 100%;
+      padding: 10px;
+      font-size: 1em;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    p { margin: 0.5em 0; }
+    strong { color: #0077cc; }
+    #upload-form {
+      display: none;
+      margin-top: 10px;
+      background: #fff;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+  </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+</head>
+<body>
+  <div id="output"></div>
+
+  <input id="input" placeholder="Pose ta question..." autofocus />
+
+  <form id="upload-form" action="/upload_from_tool" method="POST" enctype="multipart/form-data">
+    <label>Sélectionne un fichier :</label>
+    <input type="file" name="fichier" required>
+    <button type="submit">Envoyer</button>
+  </form>
+
+  <script>
+    const input = document.getElementById("input");
+    const output = document.getElementById("output");
+
+    // 🔁 Charger l'historique depuis localStorage
+    function loadChatHistory() {
+      const history = JSON.parse(localStorage.getItem("chatHistory") || "[]");
+      history.forEach(({ role, content }) => {
+        const roleLabel = role === "user" ? "Vous" : "Assistant";
+        output.innerHTML += `<p><strong>${roleLabel}:</strong> ${content}</p>`;
+      });
+      output.scrollTop = output.scrollHeight;
+    }
+
+    // 💾 Ajouter au localStorage
+    function appendToChat(role, content) {
+      const history = JSON.parse(localStorage.getItem("chatHistory") || "[]");
+      history.push({ role, content });
+      localStorage.setItem("chatHistory", JSON.stringify(history));
+    }
+
+    input.addEventListener("keydown", async (e) => {
+      if (e.key === "Enter") {
+        const question = input.value.trim();
+        if (!question) return;
+
+        output.innerHTML += `<p><strong>Vous:</strong> ${question}</p>`;
+        appendToChat("user", question);
+        input.value = "";
+
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question })
+        });
+
+        const data = await res.json();
+        output.innerHTML += `<p><strong>Assistant:</strong> ${data.answer}</p>`;
+        appendToChat("assistant", data.answer);
+
+        if (window.MathJax) MathJax.typeset();
+        output.scrollTop = output.scrollHeight;
+
+        if (data.answer.includes("📂")) {
+          document.getElementById("upload-form").style.display = "block";
+        }
+      }
+    });
+
+    loadChatHistory();
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>Cours</h1>
+<h2>Annonces</h2>
+{% if annonces %}
+  <ul>
+    {% for a in annonces %}
+      <li><strong>{{ a.title }}</strong><br>{{ a.content }}</li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>Aucune annonce pour le moment.</p>
+{% endif %}
+
+<ul>
+  {% for pdf in pdfs %}
+    <li><a href="{{ url_for('static', filename='pdfs/' + request.path.split('/')[-1] + '/' + pdf) }}" target="_blank">{{ pdf }}</a></li>
+  {% else %}
+    <li>Aucun fichier disponible.</li>
+  {% endfor %}
+</ul>
+
+{% endblock %}

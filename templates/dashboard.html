@@ -1,0 +1,153 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h1>Tableau de bord</h1>
+
+<!-- Weekly grid -->
+<div id="calendar" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px;">
+  <div><strong>Lundi</strong></div>
+  <div><strong>Mardi</strong></div>
+  <div><strong>Mercredi</strong></div>
+  <div><strong>Jeudi</strong></div>
+  <div><strong>Vendredi</strong></div>
+  <div><strong>Samedi</strong></div>
+  <div><strong>Dimanche</strong></div>
+
+  <div id="day-Lundi"></div>
+  <div id="day-Mardi"></div>
+  <div id="day-Mercredi"></div>
+  <div id="day-Jeudi"></div>
+  <div id="day-Vendredi"></div>
+  <div id="day-Samedi"></div>
+  <div id="day-Dimanche"></div>
+</div>
+
+<hr>
+
+<!-- Event creation form -->
+<h2>Ajouter un événement</h2>
+<form id="event-form">
+  <label>Titre: <input type="text" name="title" required></label><br>
+
+  <label>Jour:
+    <select name="day">
+      <option>Lundi</option><option>Mardi</option><option>Mercredi</option>
+      <option>Jeudi</option><option>Vendredi</option><option>Samedi</option><option>Dimanche</option>
+    </select>
+  </label><br>
+
+  <label>Type:
+    <select name="type">
+      <option value="event">Événement</option>
+      <option value="timeframe">Plage horaire</option>
+    </select>
+  </label><br>
+
+  <div id="event-time">
+    <label>Heure: <input type="time" name="single_time"></label>
+  </div>
+
+  <div id="timeframe-times" style="display: none;">
+    <label>Heure de début: <input type="time" name="start_time"></label><br>
+    <label>Heure de fin: <input type="time" name="end_time"></label>
+  </div>
+
+  <button type="submit">Ajouter</button>
+</form>
+
+<!-- Logic -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // 1. Load and display events sorted by time
+  fetch("/api/schedule")
+    .then(response => response.json())
+    .then(events => {
+      // Group by day
+      const days = {
+        "Lundi": [], "Mardi": [], "Mercredi": [], "Jeudi": [],
+        "Vendredi": [], "Samedi": [], "Dimanche": []
+      };
+
+      events.forEach(event => {
+        if (days[event.day]) {
+          days[event.day].push(event);
+        }
+      });
+
+      // Sort and render each day's events
+      Object.entries(days).forEach(([day, dayEvents]) => {
+        const container = document.getElementById("day-" + day);
+        if (!container) return;
+
+        dayEvents.sort((a, b) => {
+          const getTime = e => {
+            if (e.type === "event") return new Date(e.time).getTime();
+            return new Date(e.start).getTime();
+          };
+          return getTime(a) - getTime(b);
+        });
+
+        dayEvents.forEach(event => {
+          const div = document.createElement("div");
+          div.style.margin = "5px";
+          div.style.padding = "5px";
+          div.style.border = "1px solid #ccc";
+          div.style.background = event.type === "event" ? "#def" : "#fde";
+
+          let timeText = "";
+          if (event.type === "event") {
+            timeText = new Date(event.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          } else {
+            const start = new Date(event.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const end = new Date(event.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            timeText = `${start} - ${end}`;
+          }
+
+          div.innerHTML = `<strong>${event.title}</strong><br>${timeText}`;
+          container.appendChild(div);
+        });
+      });
+    });
+
+  // 2. Toggle time input UI
+  document.querySelector('select[name="type"]').addEventListener("change", e => {
+    const type = e.target.value;
+    document.getElementById("event-time").style.display = type === "event" ? "block" : "none";
+    document.getElementById("timeframe-times").style.display = type === "timeframe" ? "block" : "none";
+  });
+
+  // 3. Handle form submission
+  document.getElementById("event-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const form = e.target;
+    const type = form.type.value;
+    const todayStr = new Date().toISOString().split("T")[0];
+
+    const data = {
+      title: form.title.value,
+      day: form.day.value,
+      type: type
+    };
+
+    if (type === "event") {
+      data.time = `${todayStr}T${form.single_time.value}`;
+    } else {
+      data.start = `${todayStr}T${form.start_time.value}`;
+      data.end = `${todayStr}T${form.end_time.value}`;
+    }
+
+    fetch("/api/add_event", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    })
+      .then(res => res.json())
+      .then(result => {
+        alert(result.message);
+        if (result.status === "success") location.reload();
+      });
+  });
+});
+</script>
+
+{% endblock %}

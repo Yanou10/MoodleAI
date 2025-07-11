@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>MoodleAI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #fafafa;
+      color: #222;
+    }
+
+    .navbar {
+      background: rgba(54, 90, 157, 0.1);
+      padding: 0 2rem;
+      box-shadow: 0 2px 8px rgba(54, 90, 157, 0.2);
+      font-weight: 500;
+    }
+
+    .navbar-brand {
+      color: #365a9d;
+      font-size: 1.7rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      user-select: none;
+      transition: color 0.3s ease;
+    }
+
+    .navbar-brand:hover {
+      color: #2a3a59;
+      text-decoration: none;
+    }
+
+    .navbar-brand.d-flex {
+      align-items: center;
+      gap: 10px;
+    }
+
+    .navbar-nav {
+      gap: 1.5rem;
+      display: flex;
+      align-items: center;
+      margin-left: auto;
+    }
+
+    .nav-link {
+      position: relative;
+      color: #365a9d;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 0;
+      cursor: pointer;
+      transition: color 0.3s ease, background-color 0.3s ease;
+      background-color: transparent;
+      outline: none;
+      text-decoration: none;
+    }
+
+    .nav-link i {
+      font-size: 1.3rem;
+      transition: color 0.3s ease;
+    }
+
+    .nav-link::after {
+      content: "";
+      position: absolute;
+      width: 0%;
+      height: 2px;
+      bottom: 0;
+      left: 0;
+      background-color: #365a9d;
+      transition: width 0.3s ease;
+      border-radius: 2px;
+    }
+
+    .nav-link:hover,
+    .nav-link:focus-visible,
+    .nav-link.active {
+      color: #2a3a59;
+      background-color: transparent;
+      outline: none;
+    }
+
+    .nav-link:hover::after,
+    .nav-link:focus-visible::after,
+    .nav-link.active::after {
+      width: 100%;
+    }
+
+    .nav-link:hover i,
+    .nav-link:focus-visible i,
+    .nav-link.active i {
+      color: #2a3a59;
+    }
+
+    .nav-link:focus-visible {
+      outline: 2px solid #2a3a59;
+      outline-offset: 3px;
+      background-color: transparent;
+    }
+
+    .nav-link:active {
+      background-color: transparent;
+      color: #2a3a59;
+      outline: none;
+    }
+
+    .navbar-toggler {
+      border: none;
+      outline: none;
+      filter: invert(25%);
+    }
+
+    @media (max-width: 991.98px) {
+      .navbar-nav {
+        flex-direction: column;
+        gap: 1rem;
+        margin-left: 0;
+      }
+      .nav-link {
+        font-size: 1.2rem;
+      }
+    }
+
+    main.container-main {
+      max-width: 1140px;
+      margin: 3rem auto;
+      padding: 0 1rem;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
+        <img src="{{ url_for('static', filename='img/logo-univ-reunion.png') }}" alt="Logo Univ Reunion" style="height: 45px; margin-right: 10px;" />
+        MoodleAI
+      </a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'index' %}active{% endif %}" href="{{ url_for('index') }}">
+              <i class="bi bi-house-door"></i> Accueil
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}">
+              <i class="bi bi-speedometer2"></i> Tableau de bord
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'notes' %}active{% endif %}" href="{{ url_for('notes') }}">
+              <i class="bi bi-journal-text"></i> Notes
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'mail' %}active{% endif %}" href="{{ url_for('mail') }}">
+              <i class="bi bi-envelope"></i> Envoi de mails
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'timetable' %}active{% endif %}" href="{{ url_for('timetable') }}">
+              <i class="bi bi-calendar-week"></i> Emploi du temps
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'reservation' %}active{% endif %}" href="{{ url_for('reservation') }}">
+              <i class="bi bi-calendar-check"></i> Réservation
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'upload' %}active{% endif %}" href="{{ url_for('upload') }}">
+              <i class="bi bi-upload"></i> Téléchargements
+            </a>
+          </li>
+          <li class="nav-item">
+  <a class="nav-link {% if request.endpoint == 'outils' %}active{% endif %}" href="{{ url_for('outils') }}">
+    <i class="bi bi-tools"></i> Outils
+  </a>
+</li>
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container-main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+</body>
+</html>

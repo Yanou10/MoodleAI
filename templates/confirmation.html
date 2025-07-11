@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h2>Réservation confirmée !</h2>
+    <p><strong>Nom :</strong> {{ nom }}</p>
+    <p><strong>Sujet :</strong> {{ sujet }}</p>
+    <p><strong>Date :</strong> {{ date }}</p>
+    <p><strong>Heure :</strong> {{ heure }}</p>
+    <a href="{{ url_for('reservation') }}" class="btn btn-secondary mt-3">Faire une autre réservation</a>
+  </div>
+{% endblock %}

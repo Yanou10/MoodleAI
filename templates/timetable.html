@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container py-4">
+  <h1 class="mb-4 text-center text-primary">Mon emploi du temps</h1>
+
+  <!-- Emploi du temps détaillé -->
+  <h2 class="text-center">Emploi du temps de la semaine</h2>
+  
+  <ul class="list-group">
+    {% for event in schedule['schedule'] %}
+      <li class="list-group-item">
+        <h5>{{ event.course }}</h5>
+        <p><strong>Professeur:</strong> {{ event.professor }}</p>
+        <p><strong>Type de cours:</strong> {{ event.type }}</p>
+        <p><strong>Jour:</strong> {{ event.day }}</p>
+        <p><strong>Heure:</strong> {{ event.start_time }} - {{ event.end_time }}</p>
+        <p><strong>Salle:</strong> {{ event.room }}</p>
+        <p><strong>Description:</strong> {{ event.description }}</p>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container text-center py-5">
+  <h1 class="mb-4">Qui utilise MoodleAI ?</h1>
+  <div class="d-flex justify-content-center gap-5 flex-wrap">
+    <form action="{{ url_for('login') }}" method="post">
+      <input type="hidden" name="user" value="melissa">
+      <button type="submit" class="btn btn-link user-profile p-0">
+        <img src="{{ url_for('static', filename='img/melissa_avatar.png') }}" class="rounded-circle shadow" width="150" height="150" alt="Mélissa">
+        <h4 class="mt-3">Mélissa</h4>
+      </button>
+    </form>
+
+    <form action="{{ url_for('login') }}" method="post">
+      <input type="hidden" name="user" value="yann">
+      <button type="submit" class="btn btn-link user-profile p-0">
+        <img src="{{ url_for('static', filename='img/yann_avatar.png') }}" class="rounded-circle shadow" width="150" height="150" alt="Yann">
+        <h4 class="mt-3">Yann</h4>
+      </button>
+    </form>
+  </div>
+</div>
+
+<style>
+  .user-profile {
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.3s ease;
+  }
+
+  .user-profile:hover {
+    transform: scale(1.05);
+  }
+</style>
+{% endblock %}

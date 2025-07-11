@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h1>Réserver une salle de travail</h1>
+
+<form method="post">
+  <label>Votre nom :
+    <input type="text" name="nom" required>
+  </label><br>
+
+  <label>Salle n° :
+    <input type="text" name="salle" required>
+  </label><br>
+
+  <label>Jour :
+    <select name="jour" required>
+      <option>Lundi</option>
+      <option>Mardi</option>
+      <option>Mercredi</option>
+      <option>Jeudi</option>
+      <option>Vendredi</option>
+      <option>Samedi</option>
+      <option>Dimanche</option>
+    </select>
+  </label><br>
+
+  <label>Heure :
+    <input type="time" name="heure" required>
+  </label><br>
+
+  <button type="submit">Réserver</button>
+</form>
+
+{% endblock %}

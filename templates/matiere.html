@@ -1,0 +1,15 @@
+{% block content %}
+<h2>{{ nom }}</h2>
+<h4>Annonces</h4>
+<ul>
+  {% for a in annonces %}
+    <li><strong>{{ a.titre }} :</strong> {{ a.contenu }}</li>
+  {% endfor %}
+</ul>
+<h4>Fichiers</h4>
+<ul>
+  {% for pdf in pdfs %}
+    <li><a href="{{ url_for('static', filename='pdfs/' + nom + '/' + pdf) }}">{{ pdf }}</a></li>
+  {% endfor %}
+</ul>
+{% endblock %}

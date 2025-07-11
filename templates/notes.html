@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+{% block content %}
+<h4>Notes des Élèves</h4>
+
+<input type="text" id="searchInput" placeholder="Rechercher un élève..." style="margin-bottom:15px; padding:8px; max-width:300px; width:100%; font-size:1em;">
+
+<table id="notesTable" style="width:100%; border-collapse: collapse; margin-top: 20px;">
+  <thead>
+    <tr>
+      <th style="padding: 10px; text-align: left; background-color: #f1f1f1;">Numéro étudiant</th>
+      <th style="padding: 10px; text-align: left; background-color: #f1f1f1;">Nom</th>
+      <th style="padding: 10px; text-align: left; background-color: #f1f1f1;">Prénom</th>
+      <th style="padding: 10px; text-align: left; background-color: #f1f1f1;">Groupe de TD</th>
+      <th style="padding: 10px; text-align: left; background-color: #f1f1f1;">Intitulé du devoir</th>
+      <th style="padding: 10px; text-align: left; background-color: #f1f1f1;">Note</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for eleve in eleves %}
+      <tr class="note-row" data-note="{{ eleve.note }}">
+        <td style="padding: 10px; border: 1px solid #ddd;">{{ eleve.numero }}</td>
+        <td style="padding: 10px; border: 1px solid #ddd;">{{ eleve.nom }}</td>
+        <td style="padding: 10px; border: 1px solid #ddd;">{{ eleve.groupe }}</td>
+        <td style="padding: 10px; border: 1px solid #ddd;">{{ eleve.matiere }}</td>
+        <td class="note-value" style="padding: 10px; border: 1px solid #ddd;">{{ eleve.note }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<style>
+  #notesTable th {
+    background-color: #f1f1f1;
+    font-weight: bold;
+  }
+
+  .note-row:hover {
+    background-color: #f9fbff;
+  }
+
+  .note-value.low { color: #e63946; }
+  .note-value.mid { color: #f4a261; }
+  .note-value.high { color: #2a9d8f; }
+</style>
+
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  const rows = document.querySelectorAll('.note-row');
+  rows.forEach(row => {
+    const noteValueEl = row.querySelector('.note-value');
+    const note = parseFloat(row.getAttribute('data-note'));
+
+    if (note >= 14) {
+      noteValueEl.classList.add('high');
+    } else if (note >= 10) {
+      noteValueEl.classList.add('mid');
+    } else {
+      noteValueEl.classList.add('low');
+    }
+  });
+});
+
+document.getElementById('searchInput').addEventListener('input', function() {
+  const filter = this.value.toLowerCase();
+  document.querySelectorAll('.note-row').forEach(row => {
+    const name = row.querySelectorAll('td')[1].textContent.toLowerCase();
+    if (name.includes(filter)) {
+      row.style.display = '';
+    } else {
+      row.style.display = 'none';
+    }
+  });
+});
+</script>
+{% endblock %}
+
