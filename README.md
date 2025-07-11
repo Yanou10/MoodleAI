@@ -9,15 +9,15 @@ Students can upload their course files, ask questions about them, manage their w
 
 Ask the assistant to **send an email**:
 
-![Send Mail Demo](assets/demo3.gif)
+![Send Mail Demo](assets/Demo3.gif)
 
 Ask the assistant to **upload a course file**:
 
-![Upload File Demo](assets/demo2.gif)
+![Upload File Demo](assets/Demo2.gif)
 
 Then ask it **questions about the uploaded file**:
 
-![Ask Questions Demo](assets/demo1.gif)
+![Ask Questions Demo](assets/Demo1.gif)
 
 ---
 
